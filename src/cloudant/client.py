@@ -56,6 +56,10 @@ class CouchDB(dict):
     :param bool auto_renew: Keyword argument, if set to True performs
         automatic renewal of expired session authentication settings.
         Default is False.
+    :param int timeout: will be applied to both the connect and the
+        read timeouts. Specify a tuple if you would like to set the
+        values separately.
+        Default is 5 minutes.
     """
     _DATABASE_CLASS = CouchDatabase
 
@@ -69,6 +73,7 @@ class CouchDB(dict):
         self.admin_party = admin_party
         self.encoder = kwargs.get('encoder') or json.JSONEncoder
         self.adapter = kwargs.get('adapter')
+        self._timeout = kwargs.get('timeout', 300)
         self.r_session = None
         self._auto_renew = kwargs.get('auto_renew', False)
         connect_to_couch = kwargs.get('connect', False)
@@ -152,7 +157,8 @@ class CouchDB(dict):
                 'name': user,
                 'password': passwd
             },
-            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+            timeout=self._timeout
         )
         resp.raise_for_status()
 
