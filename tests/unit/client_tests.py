@@ -939,5 +939,18 @@ class CloudantClientTests(UnitTestDbBase):
         finally:
             self.client.disconnect()
 
+    def test_connect_timeout(self):
+        """
+        Test connect timeout for 1 second.
+
+        :return:
+        """
+        try:
+            self.set_up_client(timeout=1)
+            self.assertIsInstance(self.client.r_session, requests.Session)
+        finally:
+            self.client.disconnect()
+            self.assertIsNone(self.client.r_session)
+
 if __name__ == '__main__':
     unittest.main()
