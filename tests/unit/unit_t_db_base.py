@@ -136,7 +136,7 @@ class UnitTestDbBase(unittest.TestCase):
         self.set_up_client()
 
     def set_up_client(self, auto_connect=False, auto_renew=False,
-                      encoder=None, timeout=300):
+                      encoder=None, timeout=1):
         if os.environ.get('RUN_CLOUDANT_TESTS') is None:
             admin_party = False
             if (os.environ.get('ADMIN_PARTY') and

@@ -947,6 +947,7 @@ class CloudantClientTests(UnitTestDbBase):
         """
         try:
             self.set_up_client(timeout=1)
+            self.client.connect()
             self.assertIsInstance(self.client.r_session, requests.Session)
         finally:
             self.client.disconnect()
