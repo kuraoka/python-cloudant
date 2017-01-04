@@ -54,6 +54,49 @@ Connecting with a client
     # Disconnect from the server
     client.disconnect()
 
+**************
+Authentication
+**************
+
+When constructing a ``Cloudant`` client, you can authenticate using the
+[cookie authentication](http://guide.couchdb.org/editions/1/en/security.html#cookies) functionality.
+If you need the cookie to automatically renew when it expires,
+construct the client using ``auto_renew=True``:
+
+.. code-block:: python
+
+    # Create client using auto_renew to automatically renew expired cookie auth
+    client = Cloudant(USERNAME, PASSWORD, url='https://acct.cloudant.com',
+                     connect=True,
+                     auto_renew=True)
+
+****************
+Resource sharing
+****************
+
+The ``Cloudant`` or ``CouchDB`` client objects make HTTP calls using the ``requests`` library.
+``requests`` uses the [urllib3](https://pypi.python.org/pypi/urllib3) library which features
+connection pooling and thread safety.
+
+Connection pools can be managed by using the ``requests`` library's
+[HTTPAdapter](https://github.com/kennethreitz/requests/blob/master/requests/adapters.py#L78)
+when constructing a ``Cloudant`` or ``ClouchDB`` client instance.
+The default number set by the ``urllib3`` library for cached connection pools is 10.
+Use the ``HTTPAdapter`` argument ``pool_connections`` to set the number of
+urllib3 connection pools to cache, and the ``pool_maxsize`` argument to set the
+maximum number of connections to save in the pool.
+
+.. code-block:: python
+
+    # Create client with 15 cached pool connections and a max pool size of 100
+    httpAdapter = HTTPAdapter(pool_connections=15, pool_maxsize=100)
+    client = Cloudant(USERNAME, PASSWORD, url='https://acct.cloudant.com'
+                     connect=True,
+                     adapter=httpAdapter)
+
+Note: Idle connections within the pool may be terminated by the server, so will not remain open
+indefinitely meaning that this will not completely remove the overhead of creating new connections.
+
 *********
 Databases
 *********
