@@ -86,6 +86,9 @@ Use the ``HTTPAdapter`` argument ``pool_connections`` to set the number of
 urllib3 connection pools to cache, and the ``pool_maxsize`` argument to set the
 maximum number of connections to save in the pool.
 
+As long as the state of ``client`` does not changed it will be
+thread safe and accessible as a static variable to all threads.
+
 .. code-block:: python
 
     # Create client with 15 cached pool connections and a max pool size of 100
@@ -96,6 +99,16 @@ maximum number of connections to save in the pool.
 
 Note: Idle connections within the pool may be terminated by the server, so will not remain open
 indefinitely meaning that this will not completely remove the overhead of creating new connections.
+
+Using library in app server environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This library can be used in an app server e.g. django and flask. When connecting
+to ``Cloudant`` or ``CouchDB``, you have the option of using the ``connect=True``
+argument during ``client`` construction or by calling ``client.connect()``.
+If the app server requires automatic renewal of the cookie authentication, add
+the ``auto_renew=True`` argument when constructing the ``client``.
+When disconnecting, use ``client.disconnect()`` to properly logout and end a client session.
 
 *********
 Databases
