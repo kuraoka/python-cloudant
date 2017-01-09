@@ -103,12 +103,33 @@ indefinitely meaning that this will not completely remove the overhead of creati
 Using library in app server environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This library can be used in an app server e.g. django and flask. When connecting
-to ``Cloudant`` or ``CouchDB``, you have the option of using the ``connect=True``
-argument during ``client`` construction or by calling ``client.connect()``.
-If the app server requires automatic renewal of the cookie authentication, add
-the ``auto_renew=True`` argument when constructing the ``client``.
-When disconnecting, use ``client.disconnect()`` to properly logout and end a client session.
+This library can be used in an app server, and the example
+below shows how to use ``client`` in a ``flask`` app server.
+
+.. code-block:: python
+
+   from flask import Flask
+   import atexit
+
+   app = Flask(__name__)
+
+   # cookie authentication can be renewed automatically using ``auto_renew=True``
+   # which is typically what you would require when running in an application
+   # server where the connection may stay open for a long period of time
+   client = Cloudant(USERNAME, PASSWORD, url='https://acct.cloudant.com',
+                     connect=True,
+                     auto_renew=True)
+
+   @app.route('/')
+   def hello_world():
+      # do something with client
+      return 'Hello World!'
+
+   # When shutting down the app server, use ``client.disconnect()`` to properly
+   # logout and end the ``client`` session.
+   @atexit.register
+   def shutdown():
+      client.disconnect()
 
 *********
 Databases
